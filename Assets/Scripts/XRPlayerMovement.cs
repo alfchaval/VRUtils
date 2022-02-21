@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,7 +21,10 @@ public class XRPlayerMovement : MonoBehaviour
     public bool followHead = true;
     public bool canClimb = true;
     public bool climbOnEverything = false;
-
+    public bool canJump = true;
+    public float jumpForce = 10.0f;
+    private float _velocity;
+    private float _gravity = -9.81f;
 #if UNITY_EDITOR
     public bool debugRays;
 #endif
@@ -29,6 +33,12 @@ public class XRPlayerMovement : MonoBehaviour
     private MovementSystem lastMovement;
     private Transform floor;
     private Vector3 lastFloorPosition;
+
+    private void Start()
+    {
+        XRInputsManager xrInputsManager = XRInputsManager.GetInstance();
+        xrInputsManager.OnRightJoyStickPressed.AddListener(JumpMovement);
+    }
 
     private void Update()
     {
@@ -55,8 +65,11 @@ public class XRPlayerMovement : MonoBehaviour
                         ArmSwingMovement();
                         break;
                 }
+
                 lastMovement = movementSystem;
             }
+
+            _velocity += _gravity * Time.deltaTime;
         }
 #if UNITY_EDITOR
         else
@@ -64,14 +77,15 @@ public class XRPlayerMovement : MonoBehaviour
             print("No XRPlayer assigned to XRPlayerMovement component in " + transform.name);
         }
 #endif
-}
+    }
 
     private void WalkMovement()
     {
-        if(followHead)
+        if (followHead)
         {
             FollowHead();
         }
+
         CheckFloorMovement();
         ApplyDisplacement(GetJoyStickForward() + GetJoyStickLateral(), true);
         JoyStickRotation();
@@ -84,22 +98,27 @@ public class XRPlayerMovement : MonoBehaviour
         {
             FollowHead();
         }
+
         ApplyDisplacement(GetJoyStickForward() + GetJoyStickLateral() + GetJoyStickVertical(), false);
         JoyStickRotation();
     }
+
     private void DivingMovement()
     {
         if (followHead)
         {
             FollowHead();
         }
+
         Dive();
         JoyStickRotation();
     }
 
     private bool IsClimbing()
     {
-        return canClimb && ((xrPlayer.rightHand.triedGrab && (xrPlayer.rightHand.climbingTransform || climbOnEverything)) || (xrPlayer.leftHand.triedGrab && (xrPlayer.leftHand.climbingTransform || climbOnEverything)));
+        return canClimb &&
+               ((xrPlayer.rightHand.triedGrab && (xrPlayer.rightHand.climbingTransform || climbOnEverything)) ||
+                (xrPlayer.leftHand.triedGrab && (xrPlayer.leftHand.climbingTransform || climbOnEverything)));
     }
 
     private void ClimbingMovement()
@@ -110,7 +129,6 @@ public class XRPlayerMovement : MonoBehaviour
         {
             if (IsHandClimbing(xrPlayer.leftHand, out leftHandPoint))
             {
-
             }
             else
             {
@@ -138,18 +156,24 @@ public class XRPlayerMovement : MonoBehaviour
                 return true;
             }
         }
+
         climbingPoint = Vector3.zero;
         return false;
     }
 
     private void ArmSwingMovement()
     {
-
     }
 
     private void TeleportMovement()
     {
+    }
 
+    private void JumpMovement()
+    {
+        if (!canJump) return;
+        _velocity = jumpForce;
+        xrPlayer.transform.Translate(new Vector3(0, _velocity, 0) * Time.deltaTime);
     }
 
     public Vector3 ApplyDisplacement(Vector3 displacement, bool checkCollision)
@@ -158,6 +182,7 @@ public class XRPlayerMovement : MonoBehaviour
         {
             CheckPlayerCollision(ref displacement);
         }
+
         xrPlayer.transform.position += displacement;
         return displacement;
     }
@@ -167,14 +192,19 @@ public class XRPlayerMovement : MonoBehaviour
         switch (forwardDisplacement)
         {
             case MovementType.CameraRotationBased:
-                return xrPlayer.head.transform.forward * Time.deltaTime * horizontalDisplacementSpeed * XRInputsManager.GetInstance().leftJoyStick_Y;
+                return xrPlayer.head.transform.forward * Time.deltaTime * horizontalDisplacementSpeed *
+                       XRInputsManager.GetInstance().leftJoyStick_Y;
             case MovementType.CameraHorizontalBased:
-                return Vector3.Normalize(Vector3.ProjectOnPlane(xrPlayer.head.transform.forward, Vector3.up)) * Time.deltaTime * horizontalDisplacementSpeed * XRInputsManager.GetInstance().leftJoyStick_Y;
+                return Vector3.Normalize(Vector3.ProjectOnPlane(xrPlayer.head.transform.forward, Vector3.up)) *
+                       Time.deltaTime * horizontalDisplacementSpeed * XRInputsManager.GetInstance().leftJoyStick_Y;
             case MovementType.PlayerBased:
-                return xrPlayer.transform.forward * Time.deltaTime * horizontalDisplacementSpeed * XRInputsManager.GetInstance().leftJoyStick_Y;
+                return xrPlayer.transform.forward * Time.deltaTime * horizontalDisplacementSpeed *
+                       XRInputsManager.GetInstance().leftJoyStick_Y;
             case MovementType.WorldBased:
-                return Vector3.forward * Time.deltaTime * horizontalDisplacementSpeed * XRInputsManager.GetInstance().leftJoyStick_Y;
+                return Vector3.forward * Time.deltaTime * horizontalDisplacementSpeed *
+                       XRInputsManager.GetInstance().leftJoyStick_Y;
         }
+
         return Vector3.zero;
     }
 
@@ -183,14 +213,19 @@ public class XRPlayerMovement : MonoBehaviour
         switch (lateralDisplacement)
         {
             case MovementType.CameraRotationBased:
-                return xrPlayer.head.transform.right * Time.deltaTime * horizontalDisplacementSpeed * XRInputsManager.GetInstance().leftJoyStick_X;
+                return xrPlayer.head.transform.right * Time.deltaTime * horizontalDisplacementSpeed *
+                       XRInputsManager.GetInstance().leftJoyStick_X;
             case MovementType.CameraHorizontalBased:
-                return Vector3.Normalize(Vector3.ProjectOnPlane(xrPlayer.head.transform.right, Vector3.up)) * Time.deltaTime * horizontalDisplacementSpeed * XRInputsManager.GetInstance().leftJoyStick_X;
+                return Vector3.Normalize(Vector3.ProjectOnPlane(xrPlayer.head.transform.right, Vector3.up)) *
+                       Time.deltaTime * horizontalDisplacementSpeed * XRInputsManager.GetInstance().leftJoyStick_X;
             case MovementType.PlayerBased:
-                return xrPlayer.transform.right * Time.deltaTime * horizontalDisplacementSpeed * XRInputsManager.GetInstance().leftJoyStick_X;
+                return xrPlayer.transform.right * Time.deltaTime * horizontalDisplacementSpeed *
+                       XRInputsManager.GetInstance().leftJoyStick_X;
             case MovementType.WorldBased:
-                return Vector3.right * Time.deltaTime * horizontalDisplacementSpeed * XRInputsManager.GetInstance().leftJoyStick_X;
+                return Vector3.right * Time.deltaTime * horizontalDisplacementSpeed *
+                       XRInputsManager.GetInstance().leftJoyStick_X;
         }
+
         return Vector3.zero;
     }
 
@@ -199,13 +234,17 @@ public class XRPlayerMovement : MonoBehaviour
         switch (verticalDisplacement)
         {
             case MovementType.CameraRotationBased:
-                return xrPlayer.head.transform.up * Time.deltaTime * verticalDisplacementSpeed * XRInputsManager.GetInstance().rightJoyStick_Y;
+                return xrPlayer.head.transform.up * Time.deltaTime * verticalDisplacementSpeed *
+                       XRInputsManager.GetInstance().rightJoyStick_Y;
             case MovementType.PlayerBased:
-                return xrPlayer.transform.up * Time.deltaTime * verticalDisplacementSpeed * XRInputsManager.GetInstance().rightJoyStick_Y;
+                return xrPlayer.transform.up * Time.deltaTime * verticalDisplacementSpeed *
+                       XRInputsManager.GetInstance().rightJoyStick_Y;
             case MovementType.CameraHorizontalBased:
             case MovementType.WorldBased:
-                return Vector3.up * Time.deltaTime * verticalDisplacementSpeed * XRInputsManager.GetInstance().rightJoyStick_Y;
+                return Vector3.up * Time.deltaTime * verticalDisplacementSpeed *
+                       XRInputsManager.GetInstance().rightJoyStick_Y;
         }
+
         return Vector3.zero;
     }
 
@@ -220,7 +259,8 @@ public class XRPlayerMovement : MonoBehaviour
             Debug.DrawRay(rayOrigin, displacement + playerRadius, Color.red, 0.2f);
         }
 #endif
-        if (Utils.RayCastIgnoring<XRPlayer>(rayOrigin, displacement, out hit, displacement.magnitude + playerRadiusLength, true))
+        if (Utils.RayCastIgnoring<XRPlayer>(rayOrigin, displacement, out hit,
+                displacement.magnitude + playerRadiusLength, true))
         {
 #if !UNITY_EDITOR
             Vector3 playerRadius = Vector3.Normalize(displacement) * playerRadiusLength;
@@ -231,7 +271,9 @@ public class XRPlayerMovement : MonoBehaviour
 
     private void JoyStickRotation()
     {
-        xrPlayer.transform.Rotate(new Vector3(0, Time.deltaTime * cameraRotationSpeed * XRInputsManager.GetInstance().rightJoyStick_X, 0), Space.World);
+        xrPlayer.transform.Rotate(
+            new Vector3(0, Time.deltaTime * cameraRotationSpeed * XRInputsManager.GetInstance().rightJoyStick_X, 0),
+            Space.World);
     }
 
     private void CheckFloorMovement()
@@ -248,54 +290,66 @@ public class XRPlayerMovement : MonoBehaviour
     private void CheckFall()
     {
         RaycastHit hit;
-        Vector3 centeredHeadPosition = new Vector3(xrPlayer.transform.position.x, xrPlayer.head.transform.position.y, xrPlayer.transform.position.z);
+        Vector3 centeredHeadPosition = new Vector3(xrPlayer.transform.position.x, xrPlayer.head.transform.position.y,
+            xrPlayer.transform.position.z);
 #if UNITY_EDITOR
         if (debugRays)
         {
             Debug.DrawRay(centeredHeadPosition, Vector3.down, Color.red, 0.2f);
         }
 #endif
-        if (Utils.RayCastIgnoring<XRPlayer>(centeredHeadPosition, Vector3.down, out hit, xrPlayer.head.transform.localPosition.y + fallingSpeed, true))
+        if (Utils.RayCastIgnoring<XRPlayer>(centeredHeadPosition, Vector3.down, out hit,
+                xrPlayer.head.transform.localPosition.y + fallingSpeed, true))
         {
             fallingSpeed = 0;
-            xrPlayer.transform.position = new Vector3(xrPlayer.transform.position.x, hit.point.y, xrPlayer.transform.position.z);
+            xrPlayer.transform.position =
+                new Vector3(xrPlayer.transform.position.x, hit.point.y, xrPlayer.transform.position.z);
             Rigidbody rb = hit.transform.GetComponent<Rigidbody>();
             if (!rb || rb.isKinematic)
             {
                 floor = hit.transform;
                 lastFloorPosition = floor.transform.position;
             }
+
+            canJump = true;
         }
         else
         {
             floor = null;
-            xrPlayer.transform.position = new Vector3(xrPlayer.transform.position.x, xrPlayer.transform.position.y - fallingSpeed, xrPlayer.transform.position.z);
+            xrPlayer.transform.position = new Vector3(xrPlayer.transform.position.x,
+                xrPlayer.transform.position.y - fallingSpeed, xrPlayer.transform.position.z);
             fallingSpeed += Time.deltaTime * Time.deltaTime * 9.8f;
             if (fallingSpeed > maxFallingSpeed)
             {
                 fallingSpeed = maxFallingSpeed;
             }
+
+            canJump = false;
         }
     }
 
     private void Dive()
     {
-        float handDistance = Vector3.Distance(xrPlayer.rightHand.transform.position, xrPlayer.leftHand.transform.position);
+        float handDistance =
+            Vector3.Distance(xrPlayer.rightHand.transform.position, xrPlayer.leftHand.transform.position);
         if (lastMovement == MovementSystem.Diving)
         {
-            Vector3 direction = Vector3.Normalize(xrPlayer.rightHand.transform.position + xrPlayer.leftHand.transform.position - 2 * xrPlayer.ChestGuess());
+            Vector3 direction = Vector3.Normalize(xrPlayer.rightHand.transform.position +
+                xrPlayer.leftHand.transform.position - 2 * xrPlayer.ChestGuess());
             float distanceDiference = handDistance - lastHandDistance;
             if (distanceDiference > 0)
             {
                 xrPlayer.transform.position += direction * handDistance * distanceDiference * diveSpeed;
             }
         }
+
         lastHandDistance = handDistance;
     }
 
     private void FollowHead()
     {
-        Vector3 displacement = Vector3.ProjectOnPlane(xrPlayer.head.transform.position - xrPlayer.transform.position, Vector3.up);
+        Vector3 displacement =
+            Vector3.ProjectOnPlane(xrPlayer.head.transform.position - xrPlayer.transform.position, Vector3.up);
         displacement = ApplyDisplacement(displacement, true);
         xrPlayer.rigOffset.position -= displacement;
     }

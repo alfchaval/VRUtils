@@ -2470,6 +2470,10 @@ PrefabInstance:
       propertyPath: movementSystem
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 555407888, guid: 5488f54e2671d204a87cb80242a4cd0e, type: 3}
+      propertyPath: printInputs
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3640522499909593917, guid: 5488f54e2671d204a87cb80242a4cd0e, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -2480,7 +2484,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3640522499909593917, guid: 5488f54e2671d204a87cb80242a4cd0e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 4.25
       objectReference: {fileID: 0}
     - target: {fileID: 3640522499909593917, guid: 5488f54e2671d204a87cb80242a4cd0e, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2514,17 +2518,45 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3640522499909593918, guid: 5488f54e2671d204a87cb80242a4cd0e, type: 3}
+      propertyPath: m_TrackingSpace
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3640522499909593918, guid: 5488f54e2671d204a87cb80242a4cd0e, type: 3}
+      propertyPath: m_RequestedTrackingMode
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 3640522499909593919, guid: 5488f54e2671d204a87cb80242a4cd0e, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 3640522500119250395, guid: 5488f54e2671d204a87cb80242a4cd0e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5720838861430951937, guid: 5488f54e2671d204a87cb80242a4cd0e, type: 3}
+      propertyPath: debugRays
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5720838861430951937, guid: 5488f54e2671d204a87cb80242a4cd0e, type: 3}
+      propertyPath: jumpForce
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 5720838861430951937, guid: 5488f54e2671d204a87cb80242a4cd0e, type: 3}
       propertyPath: followHead
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5720838861430951937, guid: 5488f54e2671d204a87cb80242a4cd0e, type: 3}
+      propertyPath: stepHeight
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5720838861430951937, guid: 5488f54e2671d204a87cb80242a4cd0e, type: 3}
       propertyPath: climbOnEverything
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5720838861430951937, guid: 5488f54e2671d204a87cb80242a4cd0e, type: 3}
+      propertyPath: horizontalDisplacementSpeed
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5488f54e2671d204a87cb80242a4cd0e, type: 3}
