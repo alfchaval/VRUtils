@@ -23,8 +23,8 @@ public class XRPlayerMovement : MonoBehaviour
     public bool climbOnEverything = false;
     public bool canJump = true;
     public float jumpForce = 10.0f;
-    private float _velocity;
-    private float _gravity = -9.81f;
+    private bool jumping = false;
+    private bool landedJump = true;
 #if UNITY_EDITOR
     public bool debugRays;
 #endif
@@ -37,7 +37,7 @@ public class XRPlayerMovement : MonoBehaviour
     private void Start()
     {
         XRInputsManager xrInputsManager = XRInputsManager.GetInstance();
-        xrInputsManager.OnRightJoyStickPressed.AddListener(JumpMovement);
+        xrInputsManager.OnRightJoyStickPressed.AddListener(StartJump);
     }
 
     private void Update()
@@ -68,8 +68,6 @@ public class XRPlayerMovement : MonoBehaviour
 
                 lastMovement = movementSystem;
             }
-
-            _velocity += _gravity * Time.deltaTime;
         }
 #if UNITY_EDITOR
         else
@@ -169,11 +167,26 @@ public class XRPlayerMovement : MonoBehaviour
     {
     }
 
-    private void JumpMovement()
+    private void StartJump()
     {
-        if (!canJump) return;
-        _velocity = jumpForce;
-        xrPlayer.transform.Translate(new Vector3(0, _velocity, 0) * Time.deltaTime);
+        if (canJump && fallingSpeed < 0.01f && landedJump)
+        {
+            StartCoroutine(Jump());
+        }
+    }
+
+    private IEnumerator Jump()
+    {
+        jumping = true;
+        landedJump = false;
+        float remainingJumpTime = 0.5f;
+        while (remainingJumpTime > 0)
+        {
+            xrPlayer.transform.Translate(Vector3.up * (1 - remainingJumpTime) * jumpForce * Time.deltaTime);
+            yield return new WaitForEndOfFrame();
+            remainingJumpTime -= Time.deltaTime;
+        }
+        jumping = false;
     }
 
     public Vector3 ApplyDisplacement(Vector3 displacement, bool checkCollision)
@@ -289,44 +302,55 @@ public class XRPlayerMovement : MonoBehaviour
 
     private void CheckFall()
     {
-        RaycastHit hit;
-        Vector3 centeredHeadPosition = new Vector3(xrPlayer.transform.position.x, xrPlayer.head.transform.position.y,
-            xrPlayer.transform.position.z);
+        if (!jumping)
+        {
+            RaycastHit hit;
+            Vector3 centeredHeadPosition = new Vector3(xrPlayer.transform.position.x, xrPlayer.head.transform.position.y,
+                xrPlayer.transform.position.z);
 #if UNITY_EDITOR
-        if (debugRays)
-        {
-            Debug.DrawRay(centeredHeadPosition, Vector3.down, Color.red, 0.2f);
-        }
+            if (debugRays)
+            {
+                Debug.DrawRay(centeredHeadPosition, Vector3.down, Color.red, 0.2f);
+            }
 #endif
-        if (Utils.RayCastIgnoring<XRPlayer>(centeredHeadPosition, Vector3.down, out hit,
-                xrPlayer.head.transform.localPosition.y + fallingSpeed, true))
-        {
-            fallingSpeed = 0;
-            xrPlayer.transform.position =
-                new Vector3(xrPlayer.transform.position.x, hit.point.y, xrPlayer.transform.position.z);
-            Rigidbody rb = hit.transform.GetComponent<Rigidbody>();
-            if (!rb || rb.isKinematic)
+            if (Utils.RayCastIgnoring<XRPlayer>(centeredHeadPosition, Vector3.down, out hit,
+                    xrPlayer.head.transform.localPosition.y + fallingSpeed, true))
             {
-                floor = hit.transform;
-                lastFloorPosition = floor.transform.position;
+                fallingSpeed = 0;
+                landedJump = true;
+                xrPlayer.transform.position =
+                    new Vector3(xrPlayer.transform.position.x, hit.point.y, xrPlayer.transform.position.z);
+                Rigidbody rb = hit.transform.GetComponent<Rigidbody>();
+                if (!rb || rb.isKinematic)
+                {
+                    floor = hit.transform;
+                    lastFloorPosition = floor.transform.position;
+                }
             }
-
-            canJump = true;
-        }
-        else
-        {
-            floor = null;
-            xrPlayer.transform.position = new Vector3(xrPlayer.transform.position.x,
-                xrPlayer.transform.position.y - fallingSpeed, xrPlayer.transform.position.z);
-            fallingSpeed += Time.deltaTime * Time.deltaTime * 9.8f;
-            if (fallingSpeed > maxFallingSpeed)
+            else
             {
-                fallingSpeed = maxFallingSpeed;
+                floor = null;
+                xrPlayer.transform.position = new Vector3(xrPlayer.transform.position.x,
+                    xrPlayer.transform.position.y - fallingSpeed, xrPlayer.transform.position.z);
+                fallingSpeed += Time.deltaTime * Time.deltaTime * 9.8f;
+#if UNITY_EDITOR
+                if (recordSpeed && fallingSpeed > maxReachedSpeed)
+                {
+                    maxReachedSpeed = fallingSpeed;
+                }
+#endif
+                if (fallingSpeed > maxFallingSpeed)
+                {
+                    fallingSpeed = maxFallingSpeed;
+                }
             }
-
-            canJump = false;
         }
     }
+
+#if UNITY_EDITOR
+    public bool recordSpeed = false;
+    public float maxReachedSpeed = 0;
+#endif
 
     private void Dive()
     {

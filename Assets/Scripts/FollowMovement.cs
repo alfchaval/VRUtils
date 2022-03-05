@@ -22,6 +22,11 @@ public abstract class FollowMovement : MonoBehaviour
 #endif
     }
 
+    public void Follow(Interactor interactor)
+    {
+        Follow(interactor.transform);
+    }
+
     public virtual void Follow(Transform t)
     {
         transformToFollow = t;

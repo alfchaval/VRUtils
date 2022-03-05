@@ -108,6 +108,7 @@ GameObject:
   - component: {fileID: 4239211102836976003}
   - component: {fileID: 4239211102836976002}
   - component: {fileID: 4239211102836976004}
+  - component: {fileID: 2367347444477916038}
   m_Layer: 0
   m_Name: Drawer
   m_TagString: Untagged
@@ -209,6 +210,53 @@ MonoBehaviour:
   movementScope: 0
   maxDistanceForward: 0.9
   maxDistanceBackwards: 0
+--- !u!114 &2367347444477916038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4239211102836976006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54cf154b4ae0e3545b10241cd41be549, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canInteract: 1
+  canStartAlreadyStartedInteraction: 0
+  interaction:
+    name: interaction
+    startingAction:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4239211102836976004}
+          m_TargetAssemblyTypeName: FollowMovement, Assembly-CSharp
+          m_MethodName: Follow
+          m_Mode: 2
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: Interactor, Assembly-CSharp
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    endingAction:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4239211102836976004}
+          m_TargetAssemblyTypeName: FollowMovement, Assembly-CSharp
+          m_MethodName: UnFollow
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    started: 0
 --- !u!1 &4239211103728981663
 GameObject:
   m_ObjectHideFlags: 0
@@ -317,6 +365,7 @@ GameObject:
   - component: {fileID: 4239211103744966925}
   - component: {fileID: 4239211103744966924}
   - component: {fileID: 4239211103744966926}
+  - component: {fileID: 2619589415588058451}
   m_Layer: 0
   m_Name: LeftDoor
   m_TagString: Untagged
@@ -419,6 +468,53 @@ MonoBehaviour:
   axisScope: 0
   limitPositiveAngle: 110
   limitNegativeAngle: 0
+--- !u!114 &2619589415588058451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4239211103744966912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54cf154b4ae0e3545b10241cd41be549, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canInteract: 1
+  canStartAlreadyStartedInteraction: 0
+  interaction:
+    name: interaction
+    startingAction:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: 
+          m_MethodName: 
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: 
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    endingAction:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: 
+          m_MethodName: 
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: 
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    started: 0
 --- !u!1 &4239211104106731962
 GameObject:
   m_ObjectHideFlags: 0
@@ -432,6 +528,7 @@ GameObject:
   - component: {fileID: 4239211104106733127}
   - component: {fileID: 4239211104106733126}
   - component: {fileID: 4239211104106731960}
+  - component: {fileID: 5286731321061498958}
   m_Layer: 0
   m_Name: RightDoor
   m_TagString: Untagged
@@ -534,6 +631,53 @@ MonoBehaviour:
   axisScope: 0
   limitPositiveAngle: 0
   limitNegativeAngle: -110
+--- !u!114 &5286731321061498958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4239211104106731962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54cf154b4ae0e3545b10241cd41be549, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canInteract: 1
+  canStartAlreadyStartedInteraction: 0
+  interaction:
+    name: interaction
+    startingAction:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: 
+          m_MethodName: 
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: 
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    endingAction:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: 
+          m_MethodName: 
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: 
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    started: 0
 --- !u!1 &4239211104242413097
 GameObject:
   m_ObjectHideFlags: 0
